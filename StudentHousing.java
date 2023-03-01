@@ -28,6 +28,8 @@ import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
 * 
@@ -47,12 +49,14 @@ public class StudentHousing extends Application {
     // Table view to see the housemates and room numbers
     private final TableView<Housemate> table = new TableView<>();
     private final ObservableList<Housemate> data = 
-        FXCollections.observableArrayList(new Housemate("Caio", 201));
+        FXCollections.observableArrayList();
     final HBox hb = new HBox();
 
     // WIDTH and HEIGHT of GUI stored as constants 
     private final int WIDTH = 550;  // arbitrary number: change and update comments
     private final int HEIGHT = 400;
+
+    HashMap<Integer, Housemate> filled = new HashMap<Integer, Housemate>();
     
     // visual components to COMPLETE, starting code example
     // to have partial code handler working
@@ -85,11 +89,11 @@ public class StudentHousing extends Application {
         table.setItems(data);
 
         TableColumn roomNumCol = new TableColumn("Room #");
-        roomNumCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+        roomNumCol.setCellValueFactory(new PropertyValueFactory<>("room"));
         roomNumCol.setPrefWidth(50);
 
         TableColumn nameCol = new TableColumn("Name");
-        nameCol.setCellValueFactory(new PropertyValueFactory<>("room"));
+        nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         nameCol.setPrefWidth(150);
 
         table.getColumns().addAll(roomNumCol, nameCol);
@@ -156,9 +160,10 @@ public class StudentHousing extends Application {
         Button addButton = new Button("ADD");
 
         addButton.setOnAction(e -> {
-            if(!name.getText().isEmpty() && !(roomBox.getValue() == null)){
+            if(!name.getText().isEmpty() && !(roomBox.getValue() == null) && !filled.containsKey(roomBox.getValue())){
                 Housemate test = new Housemate(name.getText(), roomBox.getValue());
                 list.addHousemate(test);
+                filled.put(roomBox.getValue(), test);
                 data.add(test);
                 name.setText("");
                 roomBox.setValue(null);
@@ -167,15 +172,13 @@ public class StudentHousing extends Application {
         
         Button removeButton = new Button("REMOVE");
 
-        /*removeButton.setOnAction(e -> {
-            if(!(roomBox.getValue() == null)){
-                list.removeHousemate(roomBox.getValue());
-                Housemate x = list.getHousemate(list.search(roomBox.getValue()));
-                data.remove();
-                name.setText("");
+        removeButton.setOnAction(e -> {
+            if(!(roomBox.getValue() == null) && filled.containsKey(roomBox.getValue())){
+                data.remove(filled.get(roomBox.getValue()));
+                filled.remove(roomBox.getValue());
                 roomBox.setValue(null);
         }
-        });*/
+        });
 
         btns.getChildren().addAll(addButton, removeButton);
 
@@ -253,7 +256,7 @@ public class StudentHousing extends Application {
             //The NumberFormat class is similar to the DecimalFormat class that we used previously.
             //The getCurrencyInstance method of this class reads the system values to find out 
             //which country we are in, then uses the correct currency symbol 
-            NumberFormat nf =  NumberFormat.getCurrencyInstance();
+            /*NumberFormat nf =  NumberFormat.getCurrencyInstance();
             String s;
             displayArea2.setText("Month" +  "\t\t" +  "Amount" +  "\n");
             for (int i =  1; i <=  p.getTotal(); i++  ) {
@@ -261,7 +264,7 @@ public class StudentHousing extends Application {
                 displayArea2.appendText("" + p.getPayment(i).getMonth() +  "\t\t\t" + s + "\n");
             } 
             displayArea2.appendText("\n" + "Total paid so far :   " + 				
-            nf.format(p.calculateTotalPaid()));
+            nf.format(p.calculateTotalPaid()));*/
         }
     }
     
