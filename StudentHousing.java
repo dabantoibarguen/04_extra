@@ -20,6 +20,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.FillRule;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.scene.control.TextInputDialog;
@@ -30,6 +31,10 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
+import javafx.scene.input.KeyCode;
 
 /**
 * 
@@ -99,7 +104,7 @@ public class StudentHousing extends Application {
         table.getColumns().addAll(roomNumCol, nameCol);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        aPane.add(table, 0, 1);
+        aPane.add(table, 0, 1, 2, 1);
 
         // create some HBoxes
         HBox aLine = new HBox(10);
@@ -129,13 +134,13 @@ public class StudentHousing extends Application {
         list = new HousemateList(noOfRooms);
 
         // Adding name and room number
-        HBox selectRoom = new HBox();
+        VBox selectRoom = new VBox();
 
         Label rms = new Label("Room:");
 
         rms.setFont(font);
 
-        HBox selectName = new HBox();
+        VBox selectName = new VBox();
 
         rms.setPadding(new Insets(0, 10, 0, 0));
 
@@ -155,9 +160,11 @@ public class StudentHousing extends Application {
 
         aPane.add(selectRoom, 1, 0);
 
-        HBox btns = new HBox();
+        VBox btns = new VBox();
 
         Button addButton = new Button("ADD");
+        
+        addButton.setPrefWidth(75);
 
         addButton.setOnAction(e -> {
             if(!name.getText().isEmpty() && !(roomBox.getValue() == null) && !filled.containsKey(roomBox.getValue())){
@@ -172,6 +179,8 @@ public class StudentHousing extends Application {
         
         Button removeButton = new Button("REMOVE");
 
+        removeButton.setPrefWidth(75);
+
         removeButton.setOnAction(e -> {
             if(!(roomBox.getValue() == null) && filled.containsKey(roomBox.getValue())){
                 data.remove(filled.get(roomBox.getValue()));
@@ -183,18 +192,57 @@ public class StudentHousing extends Application {
         btns.getChildren().addAll(addButton, removeButton);
 
         aPane.add(btns, 2, 0);
+
+
+        displayArea2 = new TextArea();
+        displayArea2.setVisible(false);
+
+        aPane.add(displayArea2, 2, 1, 2, 1);
+
+        table.setOnMouseClicked(e -> {
+            if(!data.isEmpty()){
+                displayArea2.setVisible(true);
+                displayArea2.setText(table.getSelectionModel().getSelectedItem().getName());
+            }
+        });
         
         // create the scene
         Scene scene = new Scene(aPane, WIDTH, HEIGHT);
 
         aPane.setHgap(10);
         aPane.setVgap(10);
+
+        scene.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ESCAPE) {
+              Platform.exit();
+            }
+        });
+
+        table.setPrefSize(Integer.MAX_VALUE, Integer.MAX_VALUE);
+
+        ColumnConstraints col1 = new ColumnConstraints();
+        col1.setPercentWidth(40);
+        ColumnConstraints col2 = new ColumnConstraints();
+        col2.setPercentWidth(11);
+        ColumnConstraints col3 = new ColumnConstraints();
+        col3.setPercentWidth(22);
+        ColumnConstraints col4 = new ColumnConstraints();
+        col4.setPercentWidth(34);
+
+
+        aPane.getColumnConstraints().addAll(col1, col2, col3);
+
+        RowConstraints row2 = new RowConstraints();
+        row2.setVgrow(Priority.ALWAYS);
+
+        aPane.getRowConstraints().addAll(row2);
+
       
         // call private methods for button event handlers
         // you will need one for each button added: call and complete all the ones provided
         
         stage.setScene(scene);
-        stage.setTitle("Off-campus Houseing Application");
+        stage.setTitle("Off-campus Housing Application");
         stage.show(); 
         
     }
