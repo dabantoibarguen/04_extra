@@ -35,7 +35,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.input.KeyCode;
-
+import java.text.NumberFormat;
 /**
 * 
 * GUI for Off-campus Housing application
@@ -69,10 +69,10 @@ public class StudentHousing extends Application {
     //private Label title = new Label("Hello");
     
     private Button saveAndQuitButton  = new Button("Save and Quit");
-    private Button listButton  = new Button("A List"); 
+    private Button addPaymentButton = new Button("Add payment");
     
     private TextArea displayArea1  = new TextArea();  // bad name, but use in handler code
-    private TextArea displayArea2;
+    private TextArea paymentInfo;
     
     
     
@@ -106,22 +106,9 @@ public class StudentHousing extends Application {
 
         aPane.add(table, 0, 1, 2, 1);
 
-        // create some HBoxes
-        HBox aLine = new HBox(10);
-        HBox anotherLine = new HBox(10);
-        
-        // customize a button example
-        listButton.setBackground(new Background(new BackgroundFill(Color.LIGHTPINK, new CornerRadii(10), Insets.EMPTY)));
-        
-        // add components to HBoxes
-        aLine.getChildren().addAll(saveAndQuitButton);
-        anotherLine.getChildren().addAll(listButton);
-                
        // set font of heading
         Font font = new Font("Calibri", 16);
         TextField name = new TextField(); 
-
-        // add all components to VBox
 
         // TableView housemateList = new TableView<>();
 
@@ -193,17 +180,58 @@ public class StudentHousing extends Application {
 
         aPane.add(btns, 2, 0);
 
+        Button hideP = new Button("Hide Payments");
+        hideP.setVisible(false);
 
-        displayArea2 = new TextArea();
-        displayArea2.setVisible(false);
+        aPane.add(hideP, 3, 0);
 
-        aPane.add(displayArea2, 2, 1, 2, 1);
+        paymentInfo = new TextArea();
+
+        String[] monthNames = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+        
+        ObservableList<String> months = FXCollections.observableArrayList(monthNames);
+
+        HBox forPayment = new HBox();
+
+        ComboBox<String> monthBox = new ComboBox<String>(months);
+
+        Label currency = new Label("$");
+
+        currency.setFont(font);
+
+        TextField amount = new TextField();
+
+        forPayment.getChildren().addAll(monthBox, currency, amount);
+
+        addPaymentButton.setOnAction(e -> {
+            if(table.getSelectionModel().getSelectedItem() != null && monthBox.getValue() != null && !amount.getText().isEmpty()){
+                Housemate h = table.getSelectionModel().getSelectedItem();
+                h.makePayment(new Payment(monthBox.getValue(), Integer.parseInt(amount.getText())));
+                listPaymentHandler(h);
+        }
+        });
+
+        VBox paymentArea = new VBox();
+
+        paymentArea.setSpacing(5);
+
+        paymentArea.getChildren().addAll(paymentInfo, forPayment, addPaymentButton);
+
+        paymentArea.setVisible(false);
+
+        aPane.add(paymentArea, 2, 1, 2, 1);
 
         table.setOnMouseClicked(e -> {
-            if(!data.isEmpty()){
-                displayArea2.setVisible(true);
-                displayArea2.setText(table.getSelectionModel().getSelectedItem().getName());
+            if(!data.isEmpty() && table.getSelectionModel().getSelectedItem() != null){
+                listPaymentHandler(table.getSelectionModel().getSelectedItem());
+                paymentArea.setVisible(true);
+                hideP.setVisible(true);
             }
+        });
+
+        hideP.setOnAction(e -> {
+            paymentArea.setVisible(false);
+            hideP.setVisible(false);
         });
         
         // create the scene
@@ -228,7 +256,6 @@ public class StudentHousing extends Application {
         col3.setPercentWidth(22);
         ColumnConstraints col4 = new ColumnConstraints();
         col4.setPercentWidth(34);
-
 
         aPane.getColumnConstraints().addAll(col1, col2, col3);
 
@@ -291,29 +318,29 @@ public class StudentHousing extends Application {
     *          !!! right now hard-coded for room 1 !!!!
     * Need be called, modified and completed to handle errors
     */
-    private void listPaymentHandler() {  
+    private void listPaymentHandler(Housemate h) {  
         // List payments for hard-coded room 1
         // Instead of 1 should be replaced by a variable connected to a widget
-        Housemate t =  list.search(1);   
-        
-        PaymentList p  = t.getPayments();
-        if(t.getPayments().getTotal() == 0) {
-            displayArea2.setText("No payments made for this housemate");
+
+        PaymentList p  = h.getPayments();
+        if(h.getPayments().getTotal() == 0) {
+            paymentInfo.setText("No payments made for " + h.getName());
         } 
         else {  
             //The NumberFormat class is similar to the DecimalFormat class that we used previously.
             //The getCurrencyInstance method of this class reads the system values to find out 
             //which country we are in, then uses the correct currency symbol 
-            /*NumberFormat nf =  NumberFormat.getCurrencyInstance();
+            NumberFormat nf =  NumberFormat.getCurrencyInstance();
             String s;
-            displayArea2.setText("Month" +  "\t\t" +  "Amount" +  "\n");
+            paymentInfo.setText("Month" +  "\t\t" +  "Amount" +  "\n");
             for (int i =  1; i <=  p.getTotal(); i++  ) {
                 s =  nf.format(p.getPayment(i).getAmount());
-                displayArea2.appendText("" + p.getPayment(i).getMonth() +  "\t\t\t" + s + "\n");
+                paymentInfo.appendText("" + p.getPayment(i).getMonth() +  "\t\t\t" + s + "\n");
             } 
-            displayArea2.appendText("\n" + "Total paid so far :   " + 				
-            nf.format(p.calculateTotalPaid()));*/
+            paymentInfo.appendText("\n" + "Total paid so far :   " + 				
+            nf.format(p.calculateTotalPaid()));
         }
+
     }
     
     private void saveAndQuitHandler() {
