@@ -37,3 +37,12 @@ ComboBox{
     -fx-padding: 2 0 2 10px;
 }
 
+.text-area .content{
+    background-color: transparent;
+    -fx-background-color: transparent;
+}
+
+.text-area{
+    background-color: transparent;
+    -fx-background-color: transparent;
+}

@@ -60,7 +60,7 @@ public class StudentHousing extends Application {
 
     // WIDTH and HEIGHT of GUI stored as constants 
     private final int WIDTH = 550;  // arbitrary number: change and update comments
-    private final int HEIGHT = 400;
+    private final int HEIGHT = 405;
 
     HashMap<Integer, Housemate> filled = new HashMap<Integer, Housemate>();
     
@@ -69,16 +69,25 @@ public class StudentHousing extends Application {
     
     //private Label title = new Label("Hello");
     
-    private Button saveAndQuitButton  = new Button("Save and Quit");
     private Button addPaymentButton = new Button("Add payment");
     
     private TextArea displayArea1  = new TextArea();  // bad name, but use in handler code
-    private TextArea paymentInfo;
+    private VBox paymentInfo;
+
+    private TextField errorArea = new TextField();
     
     
     public void addHousemateToList(String name, int val){
         //prev = data;
         Housemate test = new Housemate(name, val);
+
+
+        if(filled.containsKey(test.getRoom())){
+            errorArea.setText("Error: Room is already filled.");
+            return;
+        }
+
+
         list.addHousemate(test);
         filled.put(val, test);
         data.add(test);
@@ -107,12 +116,12 @@ public class StudentHousing extends Application {
         
         // The table view
 
-        TableColumn roomNumCol = new TableColumn("Room #");
-        roomNumCol.setCellValueFactory(new PropertyValueFactory<>("room"));
+        TableColumn<Housemate, Integer> roomNumCol = new TableColumn<Housemate, Integer>("Room #");
+        roomNumCol.setCellValueFactory(new PropertyValueFactory<Housemate, Integer>("room"));
         roomNumCol.setPrefWidth(50);
 
-        TableColumn nameCol = new TableColumn("Name");
-        nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+        TableColumn<Housemate, String> nameCol = new TableColumn<Housemate, String>("Name");
+        nameCol.setCellValueFactory(new PropertyValueFactory<Housemate, String>("name"));
         nameCol.setPrefWidth(150);
 
         table.getColumns().addAll(roomNumCol, nameCol);
@@ -168,7 +177,7 @@ public class StudentHousing extends Application {
         addButton.setPrefWidth(75);
 
         addButton.setOnAction(e -> {
-            if(!name.getText().isEmpty() && !(roomBox.getValue() == null) && !filled.containsKey(roomBox.getValue())){
+            if(!name.getText().isEmpty() && !(roomBox.getValue() == null)){
                 addHousemateToList(name.getText(), roomBox.getValue());
                 name.setText("");
                 roomBox.setValue(null);
@@ -176,7 +185,7 @@ public class StudentHousing extends Application {
         });
 
         roomBox.setOnKeyPressed(e -> {
-            if(e.getCode() == KeyCode.ENTER && !name.getText().isEmpty() && !(roomBox.getValue() == null) && !filled.containsKey(roomBox.getValue())){
+            if(e.getCode() == KeyCode.ENTER && !name.getText().isEmpty() && !(roomBox.getValue() == null)){
                 addHousemateToList(name.getText(), roomBox.getValue());
                 name.setText("");
                 roomBox.setValue(null);
@@ -184,7 +193,7 @@ public class StudentHousing extends Application {
         });
 
         selectName.setOnKeyPressed(e -> {
-            if(e.getCode() == KeyCode.ENTER && !name.getText().isEmpty() && !(roomBox.getValue() == null) && !filled.containsKey(roomBox.getValue())){
+            if(e.getCode() == KeyCode.ENTER && !name.getText().isEmpty() && !(roomBox.getValue() == null)){
                 addHousemateToList(name.getText(), roomBox.getValue());
                 name.setText("");
                 roomBox.setValue(null);
@@ -197,6 +206,10 @@ public class StudentHousing extends Application {
 
         removeButton.setOnAction(e -> {
             if(!(roomBox.getValue() == null) && filled.containsKey(roomBox.getValue())){
+                if(!filled.containsKey(roomBox.getValue())){
+                    errorArea.setText("Error: Room is not filled at the moment.");
+                    return;
+                }
                 data.remove(filled.get(roomBox.getValue()));
                 filled.remove(roomBox.getValue());
                 roomBox.setValue(null);
@@ -215,9 +228,15 @@ public class StudentHousing extends Application {
         Button hideP = new Button("Hide Payments");
         hideP.setVisible(false);
 
-        aPane.add(hideP, 3, 0);
+        VBox forHide = new VBox();
 
-        paymentInfo = new TextArea();
+        forHide.getChildren().addAll(hideP);
+
+        forHide.setAlignment(Pos.BOTTOM_RIGHT);
+
+        aPane.add(forHide, 3, 0);
+
+        paymentInfo = new VBox();
 
         String[] monthNames = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
         
@@ -229,11 +248,15 @@ public class StudentHousing extends Application {
 
         ComboBox<String> monthBox = new ComboBox<String>(months);
 
+        monthBox.setPrefWidth(125);
+
         Label currency = new Label("$");
 
         currency.setFont(font);
 
         TextField amount = new TextField();
+
+        amount.setPrefWidth(100);
 
         forPayment.getChildren().addAll(monthBox, currency, amount);
 
@@ -244,6 +267,8 @@ public class StudentHousing extends Application {
                 listPaymentHandler(h);
         }
         });
+
+        addPaymentButton.setPrefWidth(125);
 
         table.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.BACK_SPACE && table.getSelectionModel().getSelectedItem() != null) {
@@ -262,7 +287,7 @@ public class StudentHousing extends Application {
         aPane.add(paymentArea, 2, 1, 2, 1);
 
 
-        Button saveandExit = new Button("Save&Exit");
+        Button saveandExit = new Button("Save & Quit");
         saveandExit.setPrefWidth(80);
         saveandExit.setOnAction(e->{
             saveAndQuitHandler();  
@@ -282,7 +307,12 @@ public class StudentHousing extends Application {
         load.setPrefWidth(150);
         saveandload.setSpacing(5);
 
-        aPane.add(saveandload, 3, 2);
+        aPane.add(saveandload, 3, 2, 1, 2);
+
+        errorArea.setStyle("-fx-background-color: transparent; -fx-text-fill: red");
+        errorArea.setFont(font);
+
+        aPane.add(errorArea, 0, 3);
 
         table.setOnMouseClicked(e -> {
             if(!data.isEmpty() && table.getSelectionModel().getSelectedItem() != null){
@@ -297,7 +327,6 @@ public class StudentHousing extends Application {
             hideP.setVisible(false);
         });
         
-        hideP.setAlignment(Pos.TOP_RIGHT);
         
         // create the scene
         Scene scene = new Scene(aPane, WIDTH, HEIGHT);
@@ -368,7 +397,9 @@ public class StudentHousing extends Application {
         list  = new HousemateList(noOfRooms);   
         HousemateFileHandler.readRecords(list);
         for(int i = 1; i < list.getTotal()+1; i++){
-            data.add(list.getHousemate(i));
+            Housemate h = list.getHousemate(i);
+            data.add(h);
+            filled.put(h.getRoom(), h);
         }
     }
     
@@ -397,25 +428,53 @@ public class StudentHousing extends Application {
         // List payments for hard-coded room 1
         // Instead of 1 should be replaced by a variable connected to a widget
 
+        paymentInfo.getChildren().clear();
+
+        HBox areas = new HBox();
+
+        areas.setStyle("-fx-border-color: gray");
+
+        areas.setPrefSize(Integer.MAX_VALUE, Integer.MAX_VALUE);
+
         PaymentList p  = h.getPayments();
+        TextArea monthArea = new TextArea();
+        TextArea amountArea = new TextArea();
+        TextField total = new TextField();
+
+        total.setEditable(false);
+
+        total.setStyle("-fx-background-color: transparent");
+        
+        monthArea.setEditable(false);
+        amountArea.setEditable(false);
+        
         if(h.getPayments().getTotal() == 0) {
-            paymentInfo.setText("No payments made for " + h.getName());
+            monthArea.setText("No payments made for " + h.getName());
+            areas.getChildren().addAll(monthArea);
+            paymentInfo.getChildren().addAll(areas);
+            return;
         } 
-        else {  
+        else { 
             //The NumberFormat class is similar to the DecimalFormat class that we used previously.
             //The getCurrencyInstance method of this class reads the system values to find out 
             //which country we are in, then uses the correct currency symbol 
             NumberFormat nf =  NumberFormat.getCurrencyInstance();
             String s;
-            paymentInfo.setText("Month" +  "\t\t\t" +  "Amount" +  "\n");
-            paymentInfo.appendText("\n");
+            monthArea.setText("Month" +  "\n\n");
+            amountArea.setText("Amount" +  "\n\n");
             for (int i =  1; i <=  p.getTotal(); i++  ) {
                 s =  nf.format(p.getPayment(i).getAmount());
-                paymentInfo.appendText("" + p.getPayment(i).getMonth() +  "\t\t" + s + "\n");
+                monthArea.appendText("" + p.getPayment(i).getMonth()+ "\n");
+                amountArea.appendText(s + "\n" );
+
+                total.setText("\n" + "Total paid so far :   " + 				
+                nf.format(p.calculateTotalPaid()));
             } 
-            paymentInfo.appendText("\n" + "Total paid so far :   " + 				
-            nf.format(p.calculateTotalPaid()));
+            
         }
+        areas.getChildren().addAll(monthArea, amountArea);
+
+        paymentInfo.getChildren().addAll(areas, total);
 
     }
     
