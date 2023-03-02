@@ -42,3 +42,5 @@ Inspiration, code snippets, etc.
 * [TableViewCSS]https://edencoding.com/style-tableview-javafx/
 * [TableView]http://www.java2s.com/Tutorials/Java/JavaFX/0650__JavaFX_TableView.htm 
 * [ComboBox](https://docs.oracle.com/javafx/2/ui_controls/combo-box.htm 
+* https://stackoverflow.com/questions/17388866/getting-selected-item-from-a-javafx-tableview
+* 
