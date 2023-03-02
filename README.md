@@ -1,23 +1,44 @@
-# UILab04
+# Student Off Campus Housing
 
-For meetings:
+## Description
 
-Diego: I have time to meet on
+- This application allows the user to keep track of who is in their house and when they have paid. Specifically, it allows the user to add student names and rooms, remove students, add student payments per student, and load and save previous student housing lists.
 
-- Tuesday starting at 9:30pm
-- Wednesday right before class (11:15am-12:15am) or after 8pm if it's only due next day
-- If it's due on lab instead, I can meet Thursday 11am-2:35pm at the Keck Center (got a work shift)
+- When the application is first opened, a pop window appears where the user can input the number of rooms in their house.
+- Then, once the number of rooms is inputed, the main screen appears.
+At the top, their is a text field and a combo box that allows the user to input a student name and a room number. The combo box will only show the number of rooms available. 
+- The user can then click the add housemate button, or remove housemate button. The add button will not work if both fields are not filled out, and the remove button will not work unless the room number is filled out.
 
-Alternatively, I am planning to create a branch and work on it tomorrow even if we cannot meet, so we can both try to
-implement the features we agreed.
+- In order to store and display the added housemates, we use an observable list, which is displayed in a table view.
+- The table view allows the user to see the student name and room number in a row.
+When the user clicks a row, a payment text area appears next to the table view, which allows the user to see that student's payments.
 
-Right now we need to:
+- The text area shows the month in which the student paid, and how much the student paid that month.
+There is an add payment buttton beneath the text area. The payment button takes a month from a combo box and an amount from a text field, and then adds those values to the payment text area for that student.
+- There is also a hide payment button above the text area that hides the payment text area, button, combo box, and text field.
 
-- Make the menu display payment information when clicking a user (I know how to retrieve data by clicking the rows now)
-- Functionality to add payments to the users.
-- Save/load data for a specific house arrangement (no idea how to do this)
-- I think maybe remove housemates, not sure if we managed to implement that.
-- Other stuff from the lab doc.
+- At the bottom right of the screen, their is a save and a load button which allowd the user to save the housemate list to, and load the housemate list from a file. 
 
-If you'd rather work asynchronously either update the readme here to say which feature you are working on, or
-we can coordinate through message. My number is 315-273-9303
+
+
+## Authors
+
+Diego Abanto Ibarguen
+### Contributions:
+- Research, Payment text area, payment buttons, payment combo box, clickable table view 
+
+
+Jack Donovan
+### Contributions:
+- Reasearh, style sheets, load and save functions.
+
+## Combined Contributions during lab:
+- Housemate Table view, combo boxes, and text area. Add housemate and remove housemate buttons.
+
+## Acknowledgments
+
+Inspiration, code snippets, etc.
+* [CSS] https://www.w3.org/wiki/CSS/Properties/color/keywords
+* [TableViewCSS]https://edencoding.com/style-tableview-javafx/
+* [TableView]http://www.java2s.com/Tutorials/Java/JavaFX/0650__JavaFX_TableView.htm 
+* [ComboBox](https://docs.oracle.com/javafx/2/ui_controls/combo-box.htm 
