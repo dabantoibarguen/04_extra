@@ -53,9 +53,10 @@ public class StudentHousing extends Application {
     
     // Table view to see the housemates and room numbers
     private final TableView<Housemate> table = new TableView<>();
-    private final ObservableList<Housemate> data = 
+    private ObservableList<Housemate> data = 
         FXCollections.observableArrayList();
-    final HBox hb = new HBox();
+    private ObservableList<Housemate> prev = 
+        FXCollections.observableArrayList();
 
     // WIDTH and HEIGHT of GUI stored as constants 
     private final int WIDTH = 550;  // arbitrary number: change and update comments
@@ -76,6 +77,7 @@ public class StudentHousing extends Application {
     
     
     public void addHousemateToList(String name, int val){
+        //prev = data;
         Housemate test = new Housemate(name, val);
         list.addHousemate(test);
         filled.put(val, test);
@@ -92,11 +94,18 @@ public class StudentHousing extends Application {
 
         aPane.setPadding(new Insets(10));
 
+        table.setItems(data);
+
+        //Button undo = new Button("Undo");
+
+        //undo.setOnAction(e -> {});
+
+        //aPane.add(undo, 0, 3);
+
         noOfRooms = getNumberOfRooms(); // call private method below for window
         // that takes in number of rooms in house 
         
         // The table view
-        table.setItems(data);
 
         TableColumn roomNumCol = new TableColumn("Room #");
         roomNumCol.setCellValueFactory(new PropertyValueFactory<>("room"));
@@ -109,7 +118,7 @@ public class StudentHousing extends Application {
         table.getColumns().addAll(roomNumCol, nameCol);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        aPane.add(table, 0, 1, 2, 1);
+        aPane.add(table, 0, 1, 2, 2);
 
        // set font of heading
         Font font = new Font("Calibri", 16);
@@ -252,6 +261,29 @@ public class StudentHousing extends Application {
 
         aPane.add(paymentArea, 2, 1, 2, 1);
 
+
+        Button saveandExit = new Button("Save&Exit");
+        saveandExit.setPrefWidth(80);
+        saveandExit.setOnAction(e->{
+            saveAndQuitHandler();  
+        });
+        
+        Button load = new Button("Load Housemates");
+        load.setPrefWidth(80);
+        load.setOnAction(e->{
+            initFromFile();
+        });
+        VBox saveandload = new VBox();
+        saveandload.getChildren().addAll(load, saveandExit);
+
+        saveandload.setAlignment(Pos.BOTTOM_RIGHT);
+        
+        saveandExit.setPrefWidth(150);
+        load.setPrefWidth(150);
+        saveandload.setSpacing(5);
+
+        aPane.add(saveandload, 3, 2);
+
         table.setOnMouseClicked(e -> {
             if(!data.isEmpty() && table.getSelectionModel().getSelectedItem() != null){
                 listPaymentHandler(table.getSelectionModel().getSelectedItem());
@@ -264,6 +296,8 @@ public class StudentHousing extends Application {
             paymentArea.setVisible(false);
             hideP.setVisible(false);
         });
+        
+        hideP.setAlignment(Pos.TOP_RIGHT);
         
         // create the scene
         Scene scene = new Scene(aPane, WIDTH, HEIGHT);
@@ -297,10 +331,15 @@ public class StudentHousing extends Application {
 
         aPane.getRowConstraints().addAll(row2);
 
-      
+        // Style sheet
+        scene.getStylesheets().add(getClass().getResource("housemateStyle.css").toExternalForm());
+
         // call private methods for button event handlers
         // you will need one for each button added: call and complete all the ones provided
         
+        stage.setMinHeight(HEIGHT);
+        stage.setMinWidth(WIDTH);
+
         stage.setScene(scene);
         stage.setTitle("Off-campus Housing Application");
         stage.show(); 
@@ -328,6 +367,9 @@ public class StudentHousing extends Application {
     private void initFromFile() {
         list  = new HousemateList(noOfRooms);   
         HousemateFileHandler.readRecords(list);
+        for(int i = 1; i < list.getTotal()+1; i++){
+            data.add(list.getHousemate(i));
+        }
     }
     
     /**

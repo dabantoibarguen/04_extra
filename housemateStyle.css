@@ -1,0 +1,39 @@
+Button{
+    background-color: linear-gradient(to bottom, #1d2ddd44, #93f9d790); 
+    -fx-background-color: linear-gradient(to bottom, #271ddd37, #93f9da69);
+}
+ComboBox{
+    background-color: linear-gradient(to bottom, #1dbbdd44, #93f9b944);
+    -fx-background-color: linear-gradient(to bottom, #271ddd37, #93f9da69);
+}
+.table-view {
+    background-color: dodgerblue; 
+    -fx-background-color: transparent;
+}
+.table-view .column-header-background .filler {
+    background-color: dodgerblue;
+    -fx-background-color: transparent;
+}
+.table-view .corner {
+    background-color: dodgerblue;
+    -fx-background-color: transparent;
+}
+.table-view .column-header-background{
+    background-color: dodgerblue;
+    -fx-background-color: linear-gradient(to bottom, #271ddd37, #93f9da69);
+    -fx-background-radius: 7px 7px 0px 0px;
+    padding:  0 0 5px 0;
+    -fx-padding: 0 0 5px 0;
+}
+.table-view .column-header {
+    background-color: dodgerblue;
+    -fx-background-color: transparent;
+}
+.table-view .table-cell{
+    background-color: dodgerblue;
+    border-color: transparent;
+    -fx-border-color: transparent;
+    padding: 2 0 2 10px;
+    -fx-padding: 2 0 2 10px;
+}
+
