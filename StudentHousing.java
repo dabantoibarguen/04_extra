@@ -75,7 +75,12 @@ public class StudentHousing extends Application {
     private TextArea paymentInfo;
     
     
-    
+    public void addHousemateToList(String name, int val){
+        Housemate test = new Housemate(name, val);
+        list.addHousemate(test);
+        filled.put(val, test);
+        data.add(test);
+    }
     
     @Override
     /** Initialises the screen 
@@ -155,10 +160,23 @@ public class StudentHousing extends Application {
 
         addButton.setOnAction(e -> {
             if(!name.getText().isEmpty() && !(roomBox.getValue() == null) && !filled.containsKey(roomBox.getValue())){
-                Housemate test = new Housemate(name.getText(), roomBox.getValue());
-                list.addHousemate(test);
-                filled.put(roomBox.getValue(), test);
-                data.add(test);
+                addHousemateToList(name.getText(), roomBox.getValue());
+                name.setText("");
+                roomBox.setValue(null);
+        }
+        });
+
+        roomBox.setOnKeyPressed(e -> {
+            if(e.getCode() == KeyCode.ENTER && !name.getText().isEmpty() && !(roomBox.getValue() == null) && !filled.containsKey(roomBox.getValue())){
+                addHousemateToList(name.getText(), roomBox.getValue());
+                name.setText("");
+                roomBox.setValue(null);
+        }
+        });
+
+        selectName.setOnKeyPressed(e -> {
+            if(e.getCode() == KeyCode.ENTER && !name.getText().isEmpty() && !(roomBox.getValue() == null) && !filled.containsKey(roomBox.getValue())){
+                addHousemateToList(name.getText(), roomBox.getValue());
                 name.setText("");
                 roomBox.setValue(null);
         }
@@ -173,10 +191,15 @@ public class StudentHousing extends Application {
                 data.remove(filled.get(roomBox.getValue()));
                 filled.remove(roomBox.getValue());
                 roomBox.setValue(null);
-        }
+            }
+            else{
+                if(table.getSelectionModel().getSelectedItem() != null){data.remove(table.getSelectionModel().getSelectedItem());}
+            }
         });
 
         btns.getChildren().addAll(addButton, removeButton);
+
+        btns.setSpacing(5);
 
         aPane.add(btns, 2, 0);
 
@@ -192,6 +215,8 @@ public class StudentHousing extends Application {
         ObservableList<String> months = FXCollections.observableArrayList(monthNames);
 
         HBox forPayment = new HBox();
+
+        forPayment.setSpacing(5);
 
         ComboBox<String> monthBox = new ComboBox<String>(months);
 
@@ -209,6 +234,12 @@ public class StudentHousing extends Application {
                 h.makePayment(new Payment(monthBox.getValue(), Integer.parseInt(amount.getText())));
                 listPaymentHandler(h);
         }
+        });
+
+        table.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.BACK_SPACE && table.getSelectionModel().getSelectedItem() != null) {
+                data.remove(table.getSelectionModel().getSelectedItem());
+            }
         });
 
         VBox paymentArea = new VBox();
@@ -245,6 +276,8 @@ public class StudentHousing extends Application {
               Platform.exit();
             }
         });
+
+
 
         table.setPrefSize(Integer.MAX_VALUE, Integer.MAX_VALUE);
 
@@ -332,10 +365,11 @@ public class StudentHousing extends Application {
             //which country we are in, then uses the correct currency symbol 
             NumberFormat nf =  NumberFormat.getCurrencyInstance();
             String s;
-            paymentInfo.setText("Month" +  "\t\t" +  "Amount" +  "\n");
+            paymentInfo.setText("Month" +  "\t\t\t" +  "Amount" +  "\n");
+            paymentInfo.appendText("\n");
             for (int i =  1; i <=  p.getTotal(); i++  ) {
                 s =  nf.format(p.getPayment(i).getAmount());
-                paymentInfo.appendText("" + p.getPayment(i).getMonth() +  "\t\t\t" + s + "\n");
+                paymentInfo.appendText("" + p.getPayment(i).getMonth() +  "\t\t" + s + "\n");
             } 
             paymentInfo.appendText("\n" + "Total paid so far :   " + 				
             nf.format(p.calculateTotalPaid()));
